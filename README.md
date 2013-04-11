@@ -61,5 +61,5 @@ The report should also indicate the responsibilities in the project (who made wh
 
 ##The deadline##
 
-	The deadline is the 24th of May in 2013.
+The deadline is the 24th of May in 2013.
 
