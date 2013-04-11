@@ -1,7 +1,7 @@
 Topic for Teamwork project of "Real time programming"
 ==============
 
-**Topic**
+##Topic##
 
 In this topic you use a so called multi sensor simulator. Multi sensor simulator simulates a measuring system having many sensors (in this case 20 sensors). Each sensor is measuring a temperature in a certain point in some industrial process for example. Temperatures can vary between 0 and 500. You need to write a process control system for this process. The only thing the process control system needs to do is to read temperature values from these sensors. The important thing is that your system needs to work in real-time so that it is capable to read values fast enough (so that it could for example give an immediate alarm if the temperature value goes above a given limit). This means that your application needs to read all temperature values without any long delay.
 	
