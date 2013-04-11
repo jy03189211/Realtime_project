@@ -16,7 +16,7 @@ To help to analyze the response times the sensors send a sending time with the v
 
 Immediately after you have read this kind of structure from the sensor file descriptor you can read the current time from the computer and calculate the time difference that indicates the delay of your read. Use the function diff_timespec for that purpose (see MultiSensorSimulator.h). Calculate and display the sum of all delays, because it gives a good overall figure how well your application works in real time. Sum of delays can be calculated with the function increment_timespec (see MultiSensorSimulator.h). 
 
-**How to use the multi sensor simulator**
+##How to use the multi sensor simulator##
 
 It is easy to use the multi sensor simulator. Only thing you need to do is to include the file MultiSensorSimulator.h to your source code and  link object file MultiSensorSimulatorEdu.o to your object code, if you are working with Edunix computer. If you are working with virtual Linux machine Fedora10, you need to link MultiSensorSimulatorVir.o instead of MultiSensorSimulatorEdu.o.
 You can find these files from the web at the web address http://users.metropolia.fi/~hannuvl/ke13/realtime_prog/MultiSensorSimulator/.
@@ -37,9 +37,9 @@ In the source code you only need to call function StartSimulator  as follows:
 
 After doing that you can read measurement values from sensors. For example, you could read one measurement value from the first sensor and display it to the screen in the following way:
 	
-- Tmeas measurement;
-- read(sensorDescriptors[0], &measurement, sizeof(Tmeas));
-- printf(“Measurement value was %d\n”, measurement.value);
+	 Tmeas measurement;
+	 read(sensorDescriptors[0], &measurement, sizeof(Tmeas));
+	 printf(“Measurement value was %d\n”, measurement.value);
 
 When sensor has sent all values, reading the file descriptor of that sensor causes end of file situation. If you ask each sensor to send 5 measurements by calling StartSimulator in this way:
 
@@ -47,11 +47,11 @@ When sensor has sent all values, reading the file descriptor of that sensor caus
 
 It takes about 30 seconds from the simulator to send all values. The time can vary, because the delays are random values.
 
-**The implementation**
+##The implementation##
 
 This is a teamwork exercise but this topic can also be implemented by one person if desired. The suitable team size for this project is two people if teamwork option is preferred.. In the very beginning the project plan should be done and the whole project should be implemented according to the principles of real project work (See a separate document "Instructions for project work”). 
 
-**The documentation**
+##The documentation##
 
 A project report is composed about the project. A special emphasis in the project report should be put on the following things. You have to explain, what the problem actually is and how you have solved it. It is important to document how the system is constructed as a whole and how it is working as a whole. Why the solution you have used solves the original problem.
 
@@ -59,7 +59,7 @@ One more important thing in the documentation is the description of how the syst
 
 The report should also indicate the responsibilities in the project (who made what in the project) if it is done as a team. 
 
-**The deadline**
+##The deadline##
 
 	The deadline is the 24th of May in 2013.
 
