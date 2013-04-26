@@ -26,6 +26,7 @@ If the source file of your application were myapplication.c, then you can compil
 	gcc -o myapplication.exe myapplication.c MultiSensorSimulatorEdu.o -lrt
 
 In the source code you only need to call function StartSimulator  as follows:
+
 	int noOfSensors;
 	int sensorDescriptors[20];
 	int noOfValuesPerDescriptor = X; // what you want
