@@ -7,6 +7,6 @@ int main(void)
 	int sensorDescriptors [20];
 	noOfSensors = StartSimulator(sensorDescriptors, 5);
 	read(sensorDescriptors[0], &measurement, sizeof(Tmeas));
-	printf(“Measurement value was %d\n”, measurement.value);
+	printf("Measurement value was %d\n", measurement.value);
 	return 0;
 }
