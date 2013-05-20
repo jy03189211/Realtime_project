@@ -6,7 +6,9 @@ int main(void)
 	Tmeas measurement;
 	int sensorDescriptors [20];
 	noOfSensors = StartSimulator(sensorDescriptors, 5);
-	read(sensorDescriptors[0], &measurement, sizeof(Tmeas));
-	printf("Measurement value was %d\n", measurement.value);
+	for(i=0;i<5;i++){
+		read(sensorDescriptors[0], &measurement, sizeof(Tmeas));
+		printf("Measurement value was %d\n", measurement.value);
+	}
 	return 0;
 }
