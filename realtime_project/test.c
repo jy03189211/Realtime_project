@@ -1,3 +1,9 @@
+/* 
+
+	author: jinjin
+			zhen shi
+*/
+			
 #include "MultiSensorSimulator.h"
 #include <stdio.h>
 #include <unistd.h>
