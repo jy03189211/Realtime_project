@@ -7,18 +7,20 @@
 #include <sys/types.h>
 #define NUMOFVALUE 5
 #define NUMOFCHILDREN 19
+
+//we found a rough 0.14 initializing delay in every created time value
+//so we try to write a self-defined function to initialize it
 void initial_time(struct timespec* time)
 {
 	time->tv_sec=0;
 	time->tv_nsec=0;
 }
-
+//what per single process need to do
 struct timespec start_read(int* sensorDescriptor){
 	Tmeas measurement[NUMOFVALUE];
 	struct timespec diff,sum;
 	int i;
 	initial_time(&sum);
-
 
 	for(i=0;i<NUMOFVALUE;i++){
 		read(*sensorDescriptor, &measurement[i], sizeof(Tmeas));
@@ -28,13 +30,13 @@ struct timespec start_read(int* sensorDescriptor){
 			
 			increment_timespec(&sum,&diff);
 			
-			
 		}
 
 	}
 	printf("pid: %d sum value was %lld.%.9ld\n",getpid(),sum.tv_sec,sum.tv_nsec);
 	return sum;
 }
+
 
 int main(void)
 {
@@ -54,12 +56,9 @@ int main(void)
 	noOfSensors = StartSimulator(sensorDescriptor, NUMOFVALUE);
 
     while (i < NUMOFCHILDREN) {
-    //i++;
-	//printf("test\n");
 	pid = fork();
   
-	//printf("%d\n",getpid());
-    if (pid == 0) { // this is child
+    if (pid == 0) { 
         // this is child.
         // tasks of child process are performed.
 		close(pipe_arr[0]);
@@ -68,11 +67,10 @@ int main(void)
 
 		//printf("child: %d    childpid:%d\n\n",i,getpid());
 		exit(0);
-        //exit(0);    // child terminates.
+        // child terminates.
         }
         i++;
         
-		
     }
     // Parent continues from here after creating
     // all children.
@@ -109,13 +107,10 @@ int main(void)
 	//printf("max and min value was %lld.%.9ld  %lld.%.9ld\n",csum_max.tv_sec,csum_max.tv_nsec,csum_min.tv_sec,csum_min.tv_nsec );
 
 
-	//printf("child total time value was %lld.%.9ld\n",total_sum.tv_sec,total_sum.tv_nsec );
 	//sum up with parent
 	return_psum=start_read(&sensorDescriptor[i]);
 	increment_timespec(&total_sum,&return_psum);
-	//print parent
-	//printf("parent  time value was %lld.%.9ld\n",return_psum.tv_sec,return_psum.tv_nsec );
-	//print total
+
 
 	//compare child and parent for max
 	printf("\n\n");
@@ -143,7 +138,7 @@ int main(void)
 	}else
 		printf("min  value was %lld.%.9ld\n",return_psum.tv_sec,return_psum.tv_nsec);
 
-
+	//average value
 	printf("total time value was %lld.%.9ld  average delay is %lld.%.9ld\n",total_sum.tv_sec,total_sum.tv_nsec,total_sum.tv_sec/(NUMOFCHILDREN+1),total_sum.tv_nsec/(NUMOFCHILDREN+1) );
 	
 
