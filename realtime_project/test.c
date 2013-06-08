@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #define NUMOFVALUE 5
-#define NUMOFCHILDREN 5
+#define NUMOFCHILDREN 20
 
 //we found a rough 0.14 initializing delay in every created time value
 //so we try to write a self-defined function to initialize it
@@ -24,19 +24,21 @@ void initial_time(struct timespec* time)
 //what per single process need to do
 struct timespec start_read(int sensorDescriptor){
 	Tmeas measurement[NUMOFVALUE];
-	struct timespec diff,sum;
+	struct timespec diff,sum,current;
 	int i;
 	initial_time(&sum);
-
+	initial_time(&current);
 	for(i=0;i<NUMOFVALUE;i++){
 		read(sensorDescriptor, &measurement[i], sizeof(Tmeas));
+		clock_gettime(CLOCK_REALTIME,&current);
 		printf("Measurement value was %d\n", measurement[i].value);
-		if(i>0){
-			diff=diff_timespec(&measurement[i-1].moment,&measurement[i].moment);
+		//printf("current time is %lld.%.9ld\n",current.tv_sec,current.tv_nsec);
+
+		diff=diff_timespec(&measurement[i].moment,&current);
+		//printf("diff time is %lld.%.9ld\n",diff.tv_sec,diff.tv_nsec);
+		increment_timespec(&sum,&diff);
 			
-			increment_timespec(&sum,&diff);
-			
-		}
+
 
 	}
 	printf("pid: %d sum value was %lld.%.9ld\n",getpid(),sum.tv_sec,sum.tv_nsec);
