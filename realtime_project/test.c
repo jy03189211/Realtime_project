@@ -3,7 +3,7 @@
 	author: jinjin
 			zhen shi
 */
-			
+
 #include "MultiSensorSimulator.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -11,9 +11,14 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/types.h>
+#include <signal.h>
+#include <errno.h>
 #define NUMOFVALUE 5
-#define NUMOFCHILDREN 19
-
+#define NUMOFCHILDREN 20
+#define ALARMVALUE 450
+void sig_handler(int sig_no) {
+    printf("********** temp alarm, higher than 450!!!**********\n");
+}
 //we found a rough 0.14 initializing delay in every created time value
 //so we try to write a self-defined function to initialize it
 void initial_time(struct timespec* time)
@@ -22,21 +27,26 @@ void initial_time(struct timespec* time)
 	time->tv_nsec=0;
 }
 //what per single process need to do
-struct timespec start_read(int* sensorDescriptor){
+struct timespec start_read(int sensorDescriptor){
 	Tmeas measurement[NUMOFVALUE];
-	struct timespec diff,sum;
+	struct timespec diff,sum,current;
 	int i;
 	initial_time(&sum);
-
+	initial_time(&current);
 	for(i=0;i<NUMOFVALUE;i++){
-		read(*sensorDescriptor, &measurement[i], sizeof(Tmeas));
+		read(sensorDescriptor, &measurement[i], sizeof(Tmeas));
+		clock_gettime(CLOCK_REALTIME,&current);
 		printf("Measurement value was %d\n", measurement[i].value);
-		if(i>0){
-			diff=diff_timespec(&measurement[i-1].moment,&measurement[i].moment);
-			
-			increment_timespec(&sum,&diff);
-			
+		//printf("current time is %lld.%.9ld\n",current.tv_sec,current.tv_nsec);
+		if (measurement[i].value>ALARMVALUE)
+		{
+			 kill(getppid(), SIGUSR1);
 		}
+		diff=diff_timespec(&measurement[i].moment,&current);
+		//printf("diff time is %lld.%.9ld\n",diff.tv_sec,diff.tv_nsec);
+		increment_timespec(&sum,&diff);
+			
+
 
 	}
 	printf("pid: %d sum value was %lld.%.9ld\n",getpid(),sum.tv_sec,sum.tv_nsec);
@@ -56,8 +66,13 @@ int main(void)
 	initial_time(&return_csum);
 	initial_time(&csum_max);
 	initial_time(&csum_min);
-	pipe(pipe_arr);
+	//install handler
+	if (signal(SIGUSR1, sig_handler) == SIG_ERR) {
+        fprintf(stderr, "Cannot set signal handler\n");
+        exit(0);
+    }
 
+	pipe(pipe_arr);
 
 	noOfSensors = StartSimulator(sensorDescriptor, NUMOFVALUE);
 
@@ -68,7 +83,7 @@ int main(void)
         // this is child.
         // tasks of child process are performed.
 		close(pipe_arr[0]);
-		return_csum=start_read(&sensorDescriptor[i]);
+		return_csum=start_read(sensorDescriptor[i]);
     	write(pipe_arr[1],&return_csum,sizeof(return_csum));
 
 		//printf("child: %d    childpid:%d\n\n",i,getpid());
@@ -110,42 +125,10 @@ int main(void)
 				csum_min=return_csum;
 		}			
 	}
-	//printf("max and min value was %lld.%.9ld  %lld.%.9ld\n",csum_max.tv_sec,csum_max.tv_nsec,csum_min.tv_sec,csum_min.tv_nsec );
-
-
-	//sum up with parent
-	return_psum=start_read(&sensorDescriptor[i]);
-	increment_timespec(&total_sum,&return_psum);
-
-
-	//compare child and parent for max
-	printf("\n\n");
-	if (csum_max.tv_sec>return_psum.tv_sec)
-	{
-		printf("max  value was %lld.%.9ld\n",csum_max.tv_sec,csum_max.tv_nsec);
-	}
-	else if(csum_max.tv_sec==return_psum.tv_sec){
-		if (csum_max.tv_nsec>return_psum.tv_nsec)
-			printf("max  value was %lld.%.9ld\n",csum_max.tv_sec,csum_max.tv_nsec);
-		else
-			printf("max  value was %lld.%.9ld\n",return_psum.tv_sec,return_psum.tv_nsec);
-	}else
-		printf("max  value was %lld.%.9ld\n",return_psum.tv_sec,return_psum.tv_nsec);
-	//compare child and paret for min
-	if (csum_min.tv_sec<return_psum.tv_sec)
-	{
-		printf("min  value was %lld.%.9ld\n",csum_min.tv_sec,csum_min.tv_nsec);
-	}
-	else if(csum_min.tv_sec==return_psum.tv_sec){
-		if (csum_min.tv_nsec<return_psum.tv_nsec)
-			printf("min  value was %lld.%.9ld\n",csum_min.tv_sec,csum_min.tv_nsec);
-		else
-			printf("min  value was %lld.%.9ld\n",return_psum.tv_sec,return_psum.tv_nsec);
-	}else
-		printf("min  value was %lld.%.9ld\n",return_psum.tv_sec,return_psum.tv_nsec);
+	printf("max and min value was %lld.%.9ld  %lld.%.9ld\n",csum_max.tv_sec,csum_max.tv_nsec,csum_min.tv_sec,csum_min.tv_nsec );
 
 	//average value
-	printf("total time value was %lld.%.9ld  average delay is %lld.%.9ld\n",total_sum.tv_sec,total_sum.tv_nsec,total_sum.tv_sec/(NUMOFCHILDREN+1),total_sum.tv_nsec/(NUMOFCHILDREN+1) );
+	printf("total time value was %lld.%.9ld  average delay is %lld.%.9ld\n",return_csum.tv_sec,return_csum.tv_nsec,return_csum.tv_sec/(NUMOFCHILDREN),return_csum.tv_nsec/(NUMOFCHILDREN) );
 	
 
     while(wait(NULL) > 0);
