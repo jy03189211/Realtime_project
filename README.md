@@ -48,19 +48,6 @@ When sensor has sent all values, reading the file descriptor of that sensor caus
 
 It takes about 30 seconds from the simulator to send all values. The time can vary, because the delays are random values.
 
-##The implementation##
 
-This is a teamwork exercise but this topic can also be implemented by one person if desired. The suitable team size for this project is two people if teamwork option is preferred.. In the very beginning the project plan should be done and the whole project should be implemented according to the principles of real project work (See a separate document "Instructions for project work”). 
 
-##The documentation##
-
-A project report is composed about the project. A special emphasis in the project report should be put on the following things. You have to explain, what the problem actually is and how you have solved it. It is important to document how the system is constructed as a whole and how it is working as a whole. Why the solution you have used solves the original problem.
-
-One more important thing in the documentation is the description of how the system was tested. It is important to analyze the test results and make conclusions what they really mean. In this particular project you should at least calculate the average delay, maximum delay and minimum delays in your program when receiving measurement values. These results should be documented in the project report and their meaning should be analyzed.
-
-The report should also indicate the responsibilities in the project (who made what in the project) if it is done as a team. 
-
-##The deadline##
-
-The deadline is the 24th of May in 2013.
 
